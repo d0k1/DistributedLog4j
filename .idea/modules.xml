@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/l4jsocket.iml" filepath="$PROJECT_DIR$/l4jsocket.iml" />
+      <module fileurl="file://$PROJECT_DIR$/log4jUDP/log4jUDP.iml" filepath="$PROJECT_DIR$/log4jUDP/log4jUDP.iml" />
+    </modules>
+  </component>
+</project>
