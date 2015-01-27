@@ -1,1 +1,6 @@
-This project demostrates how to make simple distributed logs with log4j and netty. This project uses UDP as transport for log events.
+This project demonstrates various way to get distributed logs with log4j.
+
+There you can find examples of using udp as transport by netty, tcp as transport by netty, jgroups as transport to make logs distributed.
+
+Every transport example consists of appender for log4j and liistener. Listener's taks is to get log4j logging event and store them using specified appender.
+
