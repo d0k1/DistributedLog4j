@@ -16,6 +16,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.spi.LoggingEvent;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +30,7 @@ public class Log4jHandler extends ChannelHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
 		DatagramPacket packet = (DatagramPacket) msg;
 		try {
 
