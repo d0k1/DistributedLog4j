@@ -25,13 +25,12 @@ import java.io.InputStream;
 /**
  * Created by Denis V. Kirpichenkov on 27.01.15.
  */
-public class Log4jHandler extends ChannelHandlerAdapter {
+public class Log4jHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 	Logger logger = Logger.getLogger(Log4jHandler.class);
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
-		DatagramPacket packet = (DatagramPacket) msg;
+	protected void messageReceived(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
+		DatagramPacket packet = (DatagramPacket) datagramPacket;
 		try {
 
 			InputStream stream = new ByteBufInputStream(packet.content());
@@ -42,12 +41,7 @@ public class Log4jHandler extends ChannelHandlerAdapter {
 		} catch (Throwable e){
 			System.out.println(e);
 		}
-		ReferenceCountUtil.release(msg);
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		System.out.println("Error "+cause);
-		super.exceptionCaught(ctx, cause);
 	}
 }
+
+

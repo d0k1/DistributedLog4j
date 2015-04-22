@@ -36,5 +36,6 @@ public class App {
 		logger.info("Start id: " + LogSourceId.getInstance().getId());
 		logger.info(builder.toString());
 		logger.info("Stop");
+		listener.destroy();
 	}
 }
