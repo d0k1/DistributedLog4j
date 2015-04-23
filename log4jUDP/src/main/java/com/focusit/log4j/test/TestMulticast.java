@@ -1,13 +1,14 @@
 package com.focusit.log4j.test;
 
+import com.focusit.log4j.threads.NettyThreadFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.channel.socket.oio.OioDatagramChannel;
 import io.netty.util.NetUtil;
 
@@ -19,13 +20,34 @@ import java.util.concurrent.TimeUnit;
  * Created by dkirpichenkov on 22.04.15.
  */
 public class TestMulticast {
-    public void testMulticast(Bootstrap sb, Bootstrap cb) throws Throwable {
+
+    private static final int port = 9991;
+    private static final EventLoopGroup sGroup = new NioEventLoopGroup(3, new NettyThreadFactory("UDPAppender"));
+    private static final EventLoopGroup cGroup = new NioEventLoopGroup(3, new NettyThreadFactory("UDPListener"));
+
+    public static void main(String[] args) throws Throwable {
+        Bootstrap s = new Bootstrap();
+        s.group(sGroup);
+        s.channel(NioDatagramChannel.class);
+
+        Bootstrap c = new Bootstrap();
+        c.group(cGroup);
+        c.channel(NioDatagramChannel.class);
+
+        InetSocketAddress addr = new InetSocketAddress(NetUtil.LOCALHOST4, port);
+        s.localAddress(addr);
+        c.localAddress(0).remoteAddress(addr);
+
+        testMulticast(s, c);
+    }
+
+    public static void testMulticast(Bootstrap sb, Bootstrap cb) throws Throwable {
         MulticastTestHandler mhandler = new MulticastTestHandler();
 
         sb.handler(new SimpleChannelInboundHandler<Object>() {
             @Override
             public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-                // Nothing will be sent.
+                System.out.println("Sc channelRead0");
             }
         });
 
@@ -35,25 +57,20 @@ public class TestMulticast {
         sb.option(ChannelOption.SO_REUSEADDR, true);
         cb.option(ChannelOption.IP_MULTICAST_IF, NetUtil.LOOPBACK_IF);
         cb.option(ChannelOption.SO_REUSEADDR, true);
-        cb.localAddress(addr.getPort());
+        cb.localAddress(port);
 
         Channel sc = sb.bind().sync().channel();
-        if (sc instanceof OioDatagramChannel) {
-            // skip the test for OIO, as it fails because of
-            // No route to host which makes no sense.
-            // Maybe a JDK bug ?
-            sc.close().awaitUninterruptibly();
-            return;
-        }
         DatagramChannel cc = (DatagramChannel) cb.bind().sync().channel();
 
         String group = "230.0.0.1";
-        InetSocketAddress groupAddress = new InetSocketAddress(group, addr.getPort());
+        InetSocketAddress groupAddress = new InetSocketAddress(group, port);
 
         cc.joinGroup(groupAddress, NetUtil.LOOPBACK_IF).sync();
 
         sc.writeAndFlush(new DatagramPacket(Unpooled.copyInt(1), groupAddress)).sync();
-        assertTrue(mhandler.await());
+        if(!mhandler.await()){
+            throw new IllegalStateException("no data read!");
+        }
 
         // leave the group
         cc.leaveGroup(groupAddress, NetUtil.LOOPBACK_IF).sync();
@@ -81,7 +98,9 @@ public class TestMulticast {
                 fail = true;
             }
 
-            assertEquals(1, msg.content().readInt());
+            if(msg.content().readInt()!=1) {
+                throw new IllegalStateException("Wrong number received");
+            }
 
             latch.countDown();
 
@@ -93,8 +112,9 @@ public class TestMulticast {
             boolean success = latch.await(10, TimeUnit.SECONDS);
             if (fail) {
                 // fail if we receive an message after we are done
-                fail();
+                return false;
             }
             return success;
         }
-    }}
+    }
+}
