@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
       <module fileurl="file://$PROJECT_DIR$/l4jsocket.iml" filepath="$PROJECT_DIR$/l4jsocket.iml" />
-      <module fileurl="file://$PROJECT_DIR$/log4jUDP/log4jUDP.iml" filepath="$PROJECT_DIR$/log4jUDP/log4jUDP.iml" />
+      <module fileurl="file://$USER_HOME$/Документы/Source/dlog4j/log4jUDPBroadcast/log4jUDPBroadcast.iml" filepath="$USER_HOME$/Документы/Source/dlog4j/log4jUDPBroadcast/log4jUDPBroadcast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/log4jUDPMulticast/log4jUDPMulticast.iml" filepath="$PROJECT_DIR$/log4jUDPMulticast/log4jUDPMulticast.iml" />
     </modules>
   </component>
 </project>

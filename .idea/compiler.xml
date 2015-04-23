@@ -22,10 +22,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="example" />
         <module name="log4jUDP" />
+        <module name="log4jUDPBroadcast" />
+        <module name="log4jUDPMulticast" />
         <module name="producer" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="example" target="1.5" />
+      <module name="l4jsocket" target="1.5" />
+      <module name="log4jUDP" target="1.5" />
+      <module name="log4jUDPBroadcast" target="1.5" />
+      <module name="log4jUDPMulticast" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>
